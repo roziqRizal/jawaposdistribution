@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Jawa Pos</string>
+    <string name="title_activity_main">Distribution Management</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_settings">Settings</string>
+    <string name="login">Login</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="Login">Login</string>
+    <string name="jawa_pos">Jawa Pos</string>
+    <string name="distribution_management">DISTRIBUTION MANAGEMENT</string>
+    <string name="_2016_jawa_pos_group">© 2016 Jawa Pos Group</string>
+    <string name="problem_contact_admin">Problem? Contact Admin</string>
+    <string name="username">Username</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="get_route">Get Route</string>
+    <string name="done">Done</string>
+    <string name="skip">Skip</string>
+    <string name="start">Start</string>
+    <string name="title_activity_upload_report">Confirm Delivery Report</string>
+    <string name="upload_report">UPLOAD REPORT</string>
+    <string name="duration">Duration</string>
+    <string name="delivery_points">Delivery points</string>
+    <string name="stop">Stop</string>
+    <string name="any_problem">Any problem?</string>
+    <string name="please_give_a_reason">Please give a reason...</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_reset_password">Reset Password</string>
+</resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+
+    <group android:id="@+id/grp1" android:checkableBehavior="single">
+        <item
+            android:id="@+id/user"
+            android:icon="@drawable/editprofile"
+            android:title="Edit Profile"
+            />
+    </group>
+
+    <group android:id="@+id/grp2" android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/changepass"
+            android:icon="@drawable/changepass"
+            android:title="Change Password" />
+
+    </group>
+
+    <group android:id="@+id/grp3" android:checkableBehavior="single">
+
+
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/logoutdua"
+            android:title="Log Out"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#c3383838"
+            android:layout_marginTop="2dp"/>
+    </group>
+
+</menu>

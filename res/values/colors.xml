@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2e6aaf</color>
+    <color name="colorPrimaryDark">#255487</color>
+    <color name="colorPrimaryCenter">#528dcf</color>
+    <color name="colorAccent">#8e8e8e</color>
+    <color name="colorItemBackground">#6da1c7</color>
+    <color name="tableSelected">#ffc6b3</color>
+    <color name="navbar">#2e6ab2</color>
+    <color name="white">#ffffff</color>
+    <color name="separator">#326ba9</color>
+    <color name="basic">#1679bc</color>
+    <color name="button">#f69334</color>
+    <color name="black">#000000</color>
+    <color name="grey">#c1c1c1</color>
+    <color name="lightgrey">#e7e7e7</color>
+    <color name="red">#ff0000</color>
+
+</resources>

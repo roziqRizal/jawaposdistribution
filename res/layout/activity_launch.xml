@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.mobidevelop.jpdistribution.Launch"
+    android:background="@drawable/imagelaunch"
+    android:id="@+id/blur">
+
+    <com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:radius="5dp"
+        android:color="#fefefe"
+        app:dd_numDots="3"
+        app:dd_scaleMultiplier="1.5"
+        app:dd_animationDuration="500"
+        app:dd_horizontalSpacing="4dp"
+        />
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_rectangle"
+        android:layout_marginLeft="19dp"
+        android:layout_marginRight="19dp"
+        android:id="@+id/linearfieldlayout"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            android:id="@+id/textView2"
+            android:layout_alignParentTop="true"
+            android:textSize="25sp"
+            android:textColor="@color/basic"
+            android:layout_marginTop="19dp"
+            android:layout_marginLeft="25dp"
+            android:visibility="visible"
+             />
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="false"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentLeft="false"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="34dp"
+            android:id="@+id/aqua">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:layout_toLeftOf="@+id/imageView4"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/editText2"
+                android:hint="@string/prompt_email"
+                android:textSize="14sp"
+                android:background="@null"
+                android:textColor="#000000"
+                />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:id="@+id/imageView4"
+                android:src="@drawable/canceltext"
+                android:layout_alignParentRight="true"
+                />
+
+        </RelativeLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_above="@+id/aqua"
+                android:id="@+id/viewgradation3"
+                android:background="#dedede"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="5dp"
+                >
+            </View>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+
+                android:id="@+id/viewgradation"
+                android:background="#ff0000"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="5dp"
+                >
+            </View>
+        </FrameLayout>
+
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_below="@+id/editText2"
+            >
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="6"
+                android:id="@+id/editText"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/imageView5"
+                android:hint="@string/prompt_password"
+                android:textSize="14sp"
+                android:background="@null"
+                android:textColor="#000000"/>
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:id="@+id/imageView5"
+                android:src="@drawable/canceltext"
+                android:layout_alignParentRight="true"
+                />
+
+        </RelativeLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_above="@+id/editText2"
+                android:id="@+id/viewgradation4"
+                android:background="#dedede"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="5dp"
+                >
+            </View>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_above="@+id/editText2"
+                android:id="@+id/viewgradation2"
+                android:background="#ff0000"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="5dp"
+                >
+            </View>
+        </FrameLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/forget_password"
+            android:id="@+id/resetPassword"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textSize="12sp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="#f99243"
+            android:layout_marginRight="25dp"
+            android:layout_below="@+id/editText" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:id="@+id/button"
+            android:layout_alignParentBottom="false"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/customrectanglebutton"
+            android:onClick="checkLogin"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_below="@+id/resetPassword"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:text="@string/Login"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/textView27"
+                android:textSize="17sp"
+                android:textColor="@color/white"
+                android:gravity="center"/>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:text="© 2016 Jawa Pos Group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView6"
+        android:layout_below="@+id/linearfieldlayout"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
