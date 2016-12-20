@@ -68,6 +68,7 @@ public class ImageLaunch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_launch);
 
+
         dbrute = new DataRute(this);
         alertdlg = new AlertDialog.Builder(this);
         Context context = getApplicationContext();
@@ -93,7 +94,7 @@ public class ImageLaunch extends AppCompatActivity {
 
     public void getLocation(){
         boolean gps_active = locmgr.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!gps_active) {
+        /*if (!gps_active) {
             AlertDialog.Builder alertdlg = new AlertDialog.Builder(this);
             alertdlg.setTitle("GPS tidak tersedia");
             alertdlg.setMessage("Aplikasi butuh akses GPS untuk lanjut.\n" + "aktifkan GPS sekarang?");
@@ -114,7 +115,7 @@ public class ImageLaunch extends AppCompatActivity {
                 }
             });
             alertdlg.create().show();
-        }
+        }*/
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -142,6 +143,8 @@ public class ImageLaunch extends AppCompatActivity {
                 1000, (android.location.LocationListener) loclistener);
 
         location = locmgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        System.out.println("location "+location);
 
 
     }
@@ -314,8 +317,41 @@ public class ImageLaunch extends AppCompatActivity {
                 }
 
                 else {
-                    Intent toMain = new Intent(ImageLaunch.this,MainActivity.class);
-                    startActivity(toMain);
+
+                    if (location==null){
+
+                        alertdlg.setTitle("GPS tidak tersedia");
+                        alertdlg.setMessage("Aplikasi butuh akses GPS untuk lanjut.\n" + "aktifkan GPS sekarang?");
+                        alertdlg.setPositiveButton("YA", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog, int which) {
+                                //turnGPSOn();
+                                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(i);
+                            }
+                        });
+                        alertdlg.setNegativeButton("TIDAK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                        alertdlg.create().show();
+                    }
+
+
+                    else if (location!=null){
+                        Intent toMain = new Intent(ImageLaunch.this,MainActivity.class);
+                        startActivity(toMain);
+                    }
+
+                    else {
+                        Intent toMain = new Intent(ImageLaunch.this,ImageLaunch.class);
+                        startActivity(toMain);
+                    }
+
                 }
             } catch (JSONException e) {
                 Log.e("JSONException", "Error: " + e.toString());

@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity
     Bitmap bmp;
     Typeface Boldtype, SemiBoldType, RegularType;
     LatLng latlngPelanggan=null;
+    AlertDialog.Builder alertdialogbuilder;
 
 
 
@@ -270,7 +271,7 @@ public class MainActivity extends AppCompatActivity
         viewgradation2 = (View)findViewById(R.id.viewgradation2);
         commentcustomer = (ImageView)findViewById(R.id.imageButton3);
 
-
+        alertdialogbuilder = new AlertDialog.Builder(this);
 
         Context context = getApplicationContext();
         appPrefs appPrefs = new appPrefs(context);
@@ -1172,6 +1173,7 @@ public class MainActivity extends AppCompatActivity
     public class Logout extends AsyncTask<String , String, String> {
         HttpURLConnection track;
         URL url = null;
+        AlertDialog alertDialog;
 
 
 
@@ -1179,7 +1181,19 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            progressBar.show();
+
+            LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View layout2 = layoutInflater2.inflate(R.layout.downloadprogres, null);
+            mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout2.findViewById(R.id.progress);
+            mDilatingDotsProgressBar.show();
+
+            imageDialog2.setView(layout2);
+            imageDialog2.setCancelable(false);
+            ad2 = imageDialog2.create();
+            ad2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ad2.show();
+
+
             System.out.println("log out pre execute");
             endpointvalue = 1;
         }
@@ -1262,7 +1276,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(String result) {
-            progressBar.dismiss();
+            ad2.dismiss();
             Intent intent = new Intent(MainActivity.this,Launch.class);
             startActivity(intent);
         }
@@ -1665,7 +1679,10 @@ public class MainActivity extends AppCompatActivity
 
                     else if (cursor.getCount()==cursorUpload.getCount()){
                         timeSwapBuff += timeInMilliseconds;
-                        handler.removeCallbacks(updateTimer);
+                        if (handler!=null){
+                            handler.removeCallbacks(updateTimer);
+                        }
+
 
 
 

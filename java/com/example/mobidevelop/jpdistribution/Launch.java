@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -102,7 +103,7 @@ public class Launch extends AppCompatActivity {
     String routeID, StartID;
     JSONObject jobjroute;
     DataRute dbrute;
-    AlertDialog.Builder alertdlg, finish, notFinish, nullRute;
+    AlertDialog.Builder alertdlgdownload, finish, notFinish, nullRute;
     JSONArray customer = null, customers = null, akhirFotoArray = null;
     public String[] contactNames;
     public String[] customerNotFinished, awalfoto;
@@ -146,6 +147,7 @@ public class Launch extends AppCompatActivity {
         imageDialog3 = new AlertDialog.Builder(this);
         imageDialog2 = new AlertDialog.Builder(this);
         nullRute = new AlertDialog.Builder(this);
+        alertdlgdownload = new AlertDialog.Builder(this);
 
         remove1 = (ImageView)findViewById(R.id.imageView4);
         remove2 = (ImageView)findViewById(R.id.imageView5);
@@ -328,7 +330,7 @@ public class Launch extends AppCompatActivity {
         final String fakePassword="roziq";
 
         final String fakeemail2 = "roziqrizal881992@gmail.com";
-        final String fakepassword2 = "roziq";
+        final String fakepassword2 = "tyt";
         dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
 
@@ -955,15 +957,44 @@ public class Launch extends AppCompatActivity {
 
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
+        LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout2 = layoutInflater2.inflate(R.layout.popupnotifdownload, null);
+        ProgressBar progressBar = (ProgressBar)layout2.findViewById(R.id.progressBar);
+        AlertDialog alertDialogdownload;
+        TextView TV31 = (TextView)layout2.findViewById(R.id.textView31);
+        TextView TV32 = (TextView)layout2.findViewById(R.id.textView32);
+        TextView TV33 = (TextView)layout2.findViewById(R.id.textView33);
+
+
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             ad3.dismiss();
-            totalProgressTime=customer.length();
 
-            progressDownloadImage.setMax(customer.length());
-            progressDownloadImage.setCancelable(false);
-            progressDownloadImage.show();
+            TV32.setText("Mohon tunggu, proses download sedang berjalan");
+
+            TV31.setTypeface(Regular);
+            TV32.setTypeface(Regular);
+            TV33.setTypeface(Regular);
+
+            TV31.setTextSize(19);
+            TV32.setTextSize(19);
+            TV33.setTextSize(19);
+
+            alertdlgdownload.setView(layout2);
+            alertdlgdownload.setCancelable(false);
+            alertDialogdownload = alertdlgdownload.create();
+            progressBar.setMax(customer.length());
+            alertDialogdownload.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialogdownload.show();
+
+
+            //totalProgressTime=customer.length();
+
+            //progressDownloadImage.setMax(customer.length());
+            //progressDownloadImage.setCancelable(false);
+            //progressDownloadImage.show();
 
 
         }
@@ -971,8 +1002,10 @@ public class Launch extends AppCompatActivity {
         @Override
         protected Bitmap doInBackground(String... URL) {
             Bitmap bitmap = null;
+            int persen = 0;
 
             for (int i=0;i<URL.length;i++){
+
                 try {
                     JSONObject loopCustomers = customers.getJSONObject(i);
 
@@ -1026,7 +1059,35 @@ public class Launch extends AppCompatActivity {
                         db.close();
 
                         jumpTime++;
-                        progressDownloadImage.setProgress(i);
+
+
+
+                        downloadProgressPopUp(i);
+
+
+                        final int abe=i;
+                        final int abe2=persen;
+                        TV31.post(new Runnable() {
+                            public void run() {
+                                //TV31.setText(""+abe+" / "+customer.length());
+                            }
+                        });
+
+                        TV33.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                TV33.setText(""+abe+" / "+customer.length());
+                            }
+                        });
+
+                        progressBar.post(new Runnable() {
+                            public void run() {
+                                progressBar.setProgress(abe);
+                            }
+                        });
+                        //progressBar.setProgress(i);
+                        //TV31.setText(""+i);
+                        //progressBar.setProgress(i);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1044,7 +1105,7 @@ public class Launch extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
-            progressDownloadImage.dismiss();
+            alertDialogdownload.dismiss();
 
             Intent intent = new Intent(Launch.this, MainActivity.class);
             intent.putExtra("routeID",routeID);
@@ -1052,6 +1113,18 @@ public class Launch extends AppCompatActivity {
 
 
         }
+    }
+
+    public void downloadProgressPopUp(int inputan){
+        LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout2 = layoutInflater2.inflate(R.layout.popupnotifdownload, null);
+        TextView TV31 = (TextView)layout2.findViewById(R.id.textView31);
+        TextView TV32 = (TextView)layout2.findViewById(R.id.textView32);
+        TextView TV33 = (TextView)layout2.findViewById(R.id.textView33);
+
+        double persen = inputan/customer.length();
+
+        System.out.println("persen "+persen/customer.length());
     }
 
 }
