@@ -9,18 +9,28 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.media.RemotePlaybackClient;
+import android.text.InputType;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import org.json.JSONException;
@@ -49,8 +59,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class changePassword extends AppCompatActivity {
 
+    private Tracker mTracker;
     FrameLayout save,cancel;
-    EditText old, newPass, newConfirm;
+    EditText old, newPass;
     LinearLayout back;
     ProgressDialog progressBar;
     private static final String HASH_ALGORITHM = "HmacSHA256";
@@ -60,23 +71,39 @@ public class changePassword extends AppCompatActivity {
     AlertDialog.Builder imageDialog3, imagedialog, imagedialog2;
     String PublicToken;
     TextView TV7, TV8, TV9;
+    Typeface Semiboldtype, Regulartype;
+    ImageView mata1, mata2;
+    boolean gone;
+    String apkversion="/~9927";
 
-
+    synchronized public Tracker getDefaultTracker(){
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
-        Typeface Semiboldtype = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Semibold.ttf");
-        Typeface SourceSansProRegular = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Regular.ttf");
+        overridePendingTransition(R.anim.changepasswordanim,R.anim.stopanim);
+
+        Semiboldtype = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Semibold.ttf");
+        Regulartype = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Regular.ttf");
 
         TV9 = (TextView)findViewById(R.id.textView9);
         TV8 = (TextView)findViewById(R.id.textView8);
         TV7 = (TextView)findViewById(R.id.textView7);
-        TV9.setTypeface(SourceSansProRegular);
-        TV8.setTypeface(SourceSansProRegular);
-        TV7.setTypeface(SourceSansProRegular);
+        TV9.setTypeface(Regulartype);
+        TV8.setTypeface(Regulartype);
+        TV7.setTypeface(Regulartype);
+
+        mata1 = (ImageView)findViewById(R.id.imageView9);
+        mata2 = (ImageView)findViewById(R.id.imageView10);
 
         progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);
@@ -86,16 +113,87 @@ public class changePassword extends AppCompatActivity {
         cancel = (FrameLayout) findViewById(R.id.button3);
         old = (EditText)findViewById(R.id.editText4);
         newPass = (EditText)findViewById(R.id.editText5);
-        newConfirm = (EditText)findViewById(R.id.editText6);
         back = (LinearLayout) findViewById(R.id.topBar);
 
-        old.setTypeface(SourceSansProRegular);
-        newPass.setTypeface(SourceSansProRegular);
-        newConfirm.setTypeface(SourceSansProRegular);
+
+        old.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                mata1.setVisibility(View.VISIBLE);
+                mata2.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        newPass.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                mata1.setVisibility(View.INVISIBLE);
+                mata2.setVisibility(View.VISIBLE);
+            }
+        });
+
+        gone = false;
+        System.out.println("Touch Down"+gone);
+
+        old.setTypeface(Regulartype);
+        newPass.setTypeface(Regulartype);
+
+        mata1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        old.setInputType(InputType.TYPE_CLASS_TEXT);
+                        old.setTypeface(Regulartype);
+                        newPass.setTypeface(Regulartype);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        old.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        old.setTypeface(Regulartype);
+                        newPass.setTypeface(Regulartype);
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+        mata2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        newPass.setInputType(InputType.TYPE_CLASS_TEXT);
+                        old.setTypeface(Regulartype);
+                        newPass.setTypeface(Regulartype);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        newPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        old.setTypeface(Regulartype);
+                        newPass.setTypeface(Regulartype);
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+
 
         Context context = getApplicationContext();
         appPrefs appPrefs = new appPrefs(context);
         PublicToken = appPrefs.getToken();
+        String first_name = appPrefs.getFirstname();
+        String last_name = appPrefs.getLastname();
+
+        changePassword application = changePassword.this;
+        mTracker = application.getDefaultTracker();
+
+        Log.i("Change Password", "Setting screen name: " + first_name+" "+last_name);
+        String uid = Build.MODEL;
+        mTracker.setScreenName("ChangePassword~"+""+uid+"/"+ first_name+"_"+last_name+"_"+apkversion);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
 
         imageDialog3 = new AlertDialog.Builder(this);
         imagedialog = new AlertDialog.Builder(this);
@@ -103,48 +201,73 @@ public class changePassword extends AppCompatActivity {
 
         Intent myIntent = getIntent(); // gets the previously created intent
 
-        save.setOnClickListener(new View.OnClickListener() {
+        save.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        save.setBackgroundColor(getResources().getColor(R.color.darkbutton));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        save.setBackgroundColor(getResources().getColor(R.color.button));
+                        LayoutInflater layoutInflater3 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View layout3 = layoutInflater3.inflate(R.layout.downloadprogres, null);
+                        mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout3.findViewById(R.id.progress);
+                        mDilatingDotsProgressBar.show();
 
-                LayoutInflater layoutInflater3 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                View layout3 = layoutInflater3.inflate(R.layout.downloadprogres, null);
-                mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout3.findViewById(R.id.progress);
-                mDilatingDotsProgressBar.show();
+                        imageDialog3.setView(layout3);
+                        imageDialog3.setCancelable(false);
+                        ad3 = imageDialog3.create();
+                        ad3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        ad3.show();
 
-                imageDialog3.setView(layout3);
-                imageDialog3.setCancelable(false);
-                ad3 = imageDialog3.create();
-                ad3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                ad3.show();
+                        String oldPass = String.valueOf(old.getText());
+                        String newPas = String.valueOf(newPass.getText());
+                        dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        String timestamp = dateFormat.format(new Date());
 
-                String oldPass = String.valueOf(old.getText());
-                String newPas = String.valueOf(newPass.getText());
-                String newconf = String.valueOf(newConfirm.getText());
-                dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                String timestamp = dateFormat.format(new Date());
-
-                try {
-                    new changePass().execute(oldPass,newPas,newconf,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp,PublicToken);
-                } catch (SignatureException e) {
-                    e.printStackTrace();
+                        try {
+                            new changePass().execute(oldPass,newPas,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp,PublicToken);
+                        } catch (SignatureException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
+                return true;
             }
         });
 
+        cancel.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        cancel.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        cancel.setBackgroundColor(getResources().getColor(R.color.white));
+                        onBackPressed();
+                        break;
+                }
+                return true;
+            }
+        });
+
+        back.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        back.setBackgroundColor(getResources().getColor(R.color.basic));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        back.setBackgroundColor(getResources().getColor(R.color.basic));
+                        onBackPressed();
+                        break;
+                }
+                return true;
+            }
+        });
 
     }
 
@@ -211,10 +334,9 @@ public class changePassword extends AppCompatActivity {
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("old_password", params[0])
                         .appendQueryParameter("new_password", params[1])
-                        .appendQueryParameter("new_password_confirmation",params[2])
-                        .appendQueryParameter("sign",params[3])
-                        .appendQueryParameter("timestamp",params[4])
-                        .appendQueryParameter("token",params[5]);
+                        .appendQueryParameter("sign",params[2])
+                        .appendQueryParameter("timestamp",params[3])
+                        .appendQueryParameter("token",params[4]);
 
                 String query = builder.build().getEncodedQuery();
 
@@ -271,31 +393,107 @@ public class changePassword extends AppCompatActivity {
                 System.out.println("fdsfdsfsd"+result);
                 int status = (Integer) jobj.get("status");
 
+                final AlertDialog alertDialog;
+
                 if (status==200){
-                    imagedialog2.setMessage("Password berhasil diubah!");
-                    imagedialog2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View layout = layoutInflater.inflate(R.layout.popupnotif, null);
+
+                    imagedialog2.setView(layout);
+                    imagedialog2.setCancelable(false);
+                    alertDialog = imagedialog2.create();
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.show();
+
+                    TextView tv28, tv29, TV37;
+                    TV37 = (TextView)layout.findViewById(R.id.textView36);
+                    TV37.setText("Success!!!");
+                    TV37.setTextSize(18);
+                    TV37.setTypeface(Regulartype);
+                    TV37.setTextColor(getResources().getColor(R.color.basic));
+                    final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
+                    tv28 = (TextView)layout.findViewById(R.id.textView28);
+                    tv29 = (TextView)layout.findViewById(R.id.textView29);
+
+                    tv28.setTextSize(12);
+                    tv29.setTextSize(12);
+
+
+                    tv28.setText("Password was succesfully changed");
+                    tv29.setText("OK");
+
+                    tv28.setTypeface(Regulartype);
+                    tv29.setTypeface(Semiboldtype);
+
+                    frameLayout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ad3.dismiss();
-                            onBackPressed();
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch ( event.getAction() ) {
+                                case MotionEvent.ACTION_DOWN:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                    alertDialog.dismiss();
+                                    onBackPressed();
+                                    break;
+                            }
+                            return true;
                         }
                     });
-                    imagedialog2.create().show();
 
-                    //ad3.dismiss();
-                    //onBackPressed();
                 }
 
                 else if (status!=200){
                     ad3.dismiss();
-                    imagedialog.setMessage("Anda belum memasukkan data / data yang anda masukkan salah");
-                    imagedialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
 
+                    LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View layout = layoutInflater.inflate(R.layout.popupnotif, null);
+
+                    imagedialog2.setView(layout);
+                    imagedialog2.setCancelable(false);
+                    alertDialog = imagedialog2.create();
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.show();
+
+                    TextView tv28, tv29, TV37;
+
+                    TV37 = (TextView)layout.findViewById(R.id.textView36);
+                    TV37.setText("Failed!!!");
+                    TV37.setTextSize(18);
+                    TV37.setTypeface(Regulartype);
+                    TV37.setTextColor(getResources().getColor(R.color.button));
+
+                    final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
+                    tv28 = (TextView)layout.findViewById(R.id.textView28);
+                    tv29 = (TextView)layout.findViewById(R.id.textView29);
+
+                    tv28.setTextSize(15);
+                    tv29.setTextSize(12);
+
+
+                    tv28.setText("You have not entered the data / the data is incorrect. Please enter again");
+                    tv29.setText("OK");
+
+                    tv28.setTypeface(Regulartype);
+                    tv29.setTypeface(Semiboldtype);
+
+                    frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch ( event.getAction() ) {
+                                case MotionEvent.ACTION_DOWN:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                    alertDialog.dismiss();
+                                    break;
+                            }
+                            return true;
                         }
                     });
-                    imagedialog.create().show();
                 }
 
             } catch (JSONException e) {

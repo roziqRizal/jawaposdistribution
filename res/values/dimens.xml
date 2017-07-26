@@ -6,4 +6,11 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="bitmapWidth">35dp</dimen>
+    <dimen name="bitmapHeight">35dp</dimen>
+    <dimen name="pointHeight">20dp</dimen>
+    <dimen name="pointfiveteen">15dp</dimen>
+    <dimen name="pointWidth">25dp</dimen>
+    <dimen name="segmentedWidth">60dp</dimen>
+    <dimen name="segmentedHeigth">30dp</dimen>
 </resources>

@@ -16,7 +16,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/basic">
 
             <FrameLayout
                 android:layout_width="60dp"
@@ -28,28 +29,37 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="?attr/colorPrimary"
+                    android:background="@color/basic"
                     app:popupTheme="@style/AppTheme.PopupOverlay"
                     android:layout_gravity="center|left"
                     >
                 </android.support.v7.widget.Toolbar>
+
             </FrameLayout>
 
 
-
-            <TextView
-                android:text="Alamat"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/posisiUser"
-                android:layout_weight="1"
-                android:textColor="@color/white"
-                android:textSize="19sp"
-                android:layout_gravity="center"
-                android:gravity="center|left"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:layout_marginRight="20dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/basic">
+
+                <TextView
+                    android:text="Alamat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/posisiUser"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:layout_gravity="center"
+                    android:gravity="center|left"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    />
+            </LinearLayout>
+
         </LinearLayout>
 
 

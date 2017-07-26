@@ -5,14 +5,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 
+
 /**
  * Created by IZANK on 10/17/2016.
  */
 public class appPrefs {
+
     private static final String USER_PREFS = "USER_PREFS";
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
-    private String token = "token", firstname = "firstname", lastname = "lastname", image = "image", routeID = "routeID", email = "email";
+    private String token = "token", firstname = "firstname", lastname = "lastname", image = "image", routeID = "routeID", email = "email", durasihour = "durasihour", durasimins = "durasimins";
+    //private int
 
     public appPrefs(Context context){
         this.appSharedPrefs = context.getSharedPreferences(USER_PREFS, Activity.MODE_PRIVATE);
@@ -24,6 +27,20 @@ public class appPrefs {
     }
     public void setFirstname( String _firstName) {
         prefsEditor.putString(firstname, _firstName).commit();
+    }
+
+    public String getDurasihour() {
+        return appSharedPrefs.getString(durasihour, "unkown");
+    }
+    public void setDurasihour( String _durasihour) {
+        prefsEditor.putString(durasihour, _durasihour).commit();
+    }
+
+    public String getDurasimins() {
+        return appSharedPrefs.getString(durasimins, "unkown");
+    }
+    public void setDurasimins( String _durasimins) {
+        prefsEditor.putString(durasimins, _durasimins).commit();
     }
 
     public String getEmail(){

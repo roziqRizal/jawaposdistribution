@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.IntegerRes;
@@ -24,20 +25,31 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.vision.text.Text;
 import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import org.json.JSONArray;
@@ -75,17 +87,10 @@ public class Launch extends AppCompatActivity {
     public static final int READ_TIMEOUT = 150000;
     String results = "";
     String PublicToken = "";
-    String lat = "";
-    String lng = "";
     Location location;
-    Double latitude = null;
-    Double longitude = null;
-    boolean isGPSEnabled = false;
 
-    boolean isNetworkEnabled = false;
+    SQLiteDatabase db;
 
-    boolean canGetLocation = false;
-    private static final int REQUEST_READ_CONTACTS = 0;
     private static final String HASH_ALGORITHM = "HmacSHA256";
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -109,7 +114,7 @@ public class Launch extends AppCompatActivity {
     public String[] customerNotFinished, awalfoto;
     public String[][] path;
     String first_name, last_name, emailuser;
-    String nama_depan, alamatStr, teleponStr, IDStr, pelangganIDStr, nama_belakang, latitudes, longitudes, photo;
+    String nama_depan, alamatStr, teleponStr, IDStr, pelangganIDStr, nama_belakang, latitudes, longitudes, photo, jenis_pelanggan, program_pelanggan;
     Bitmap save;
     private ProgressDialog progressDownloadImage;
     int jumpTime = 0;
@@ -120,14 +125,28 @@ public class Launch extends AppCompatActivity {
     View wahid, isnain, salasah, arbaah;
     TextView copyright, textView27;
     Typeface Regular, Semibold;
+    boolean doubleBackToExitPressedOnce = false;
+    FrameLayout buttontouch;
+    String first_name2, last_name2, uId, uModel, apkversion="/~9927";
+
+    private Tracker mTracker;
 
 
-
+    synchronized public Tracker getDefaultTracker(){
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+
+        overridePendingTransition(R.anim.startanim,R.anim.stopanim);
         copyright = (TextView)findViewById(R.id.textView6);
         textView27 = (TextView)findViewById(R.id.textView27);
         mEmailView = (EditText) findViewById(R.id.editText2);
@@ -149,6 +168,28 @@ public class Launch extends AppCompatActivity {
         nullRute = new AlertDialog.Builder(this);
         alertdlgdownload = new AlertDialog.Builder(this);
 
+        buttontouch = (FrameLayout)findViewById(R.id.button);
+
+        buttontouch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        buttontouch.setBackground(getResources().getDrawable(R.drawable.customrectanglebuttondark));
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buttontouch.setBackground(getResources().getDrawable(R.drawable.customrectanglebutton));
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/loginButton/~923"+apkversion)
+                                .setAction(uModel+"/"+uId)
+                                .build());
+                        checkLogin();
+                        break;
+                }
+                return true;
+            }
+        });
+
         remove1 = (ImageView)findViewById(R.id.imageView4);
         remove2 = (ImageView)findViewById(R.id.imageView5);
 
@@ -159,16 +200,37 @@ public class Launch extends AppCompatActivity {
 
         dbrute = new DataRute(this);
         dbrute.connect();
-        SQLiteDatabase db = dbrute.getWritableDatabase();
+        db = dbrute.getWritableDatabase();
         db.delete("DATA_PELANGGAN",null,null);
+        db.delete("UPLOAD",null,null);
+        db.delete("reasontext",null,null);
         //db.close();
 
         Context context = getApplicationContext();
         appPrefs appPrefs = new appPrefs(context);
+
         appPrefs.setgetRouteID("");
         appPrefs.setToken("");
         appPrefs.setFirstname("");
         appPrefs.setLastname("");
+        appPrefs.setDurasihour("");
+        appPrefs.setDurasimins("");
+
+        first_name2 = appPrefs.getFirstname();
+        last_name2 = appPrefs.getLastname();
+
+        uId = Build.BRAND;
+        uModel = Build.MODEL;
+
+        Launch application = Launch.this;
+        mTracker = application.getDefaultTracker();
+
+        Log.i("Login Page", "Setting screen name: " + uId);
+        mTracker.setScreenName("LoginPage~"+""+uId+"/"+uModel+"_"+apkversion);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+
+
 
         blur = (RelativeLayout)findViewById(R.id.blur);
 
@@ -189,9 +251,14 @@ public class Launch extends AppCompatActivity {
             }
         });
 
+
+
         satu.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
+                mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/passwordColumn/~923"+apkversion)
+                        .setAction(uModel+"/"+uId)
+                        .build());
                 remove1.setVisibility(View.INVISIBLE);
                 remove2.setVisibility(View.VISIBLE);
                 wahid.setVisibility(View.INVISIBLE);
@@ -201,11 +268,12 @@ public class Launch extends AppCompatActivity {
             }
         });
 
-
-
         dua.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
+                mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/emailColumn/~923"+apkversion)
+                        .setAction(uModel+"/"+uId)
+                        .build());
                 remove1.setVisibility(View.VISIBLE);
                 remove2.setVisibility(View.INVISIBLE);
                 wahid.setVisibility(View.VISIBLE);
@@ -237,6 +305,9 @@ public class Launch extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Launch.this, resetPassword.class);
+                mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/resetPasswordButton/~923"+apkversion)
+                        .setAction(uModel+"/"+uId)
+                        .build());
                 startActivity(intent);
             }
         });
@@ -322,19 +393,23 @@ public class Launch extends AppCompatActivity {
         MultiDex.install(this);
     }
 
-    public void checkLogin(View arg0) throws SignatureException {
+    public void checkLogin() {
         final String email = mEmailView.getText().toString();
         final String password = mPasswordView.getText().toString();
 
-        final String fakeEmail = "roziq@account.hellomorra.com";
-        final String fakePassword="roziq";
+        final String fakeEmail = "paperboy@account.hellomorra.com";
+        final String fakePassword="12345";
 
         final String fakeemail2 = "roziqrizal881992@gmail.com";
-        final String fakepassword2 = "tyt";
+        final String fakepassword2 = "asd";
         dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
 
-        new AsyncLogin().execute(email,password,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp);
+        try {
+            new AsyncLogin().execute(email,password,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String toHexString(byte[] bytes) {
@@ -478,9 +553,13 @@ public class Launch extends AppCompatActivity {
                 JSONObject jobj = new JSONObject(results);
                 String status = jobj.getString("status");
 
+
+
                 int statusINT = Integer.parseInt(status);
                 if (statusINT == 200){
                     JSONObject data = jobj.getJSONObject("data");
+
+
 
                     if (data.length()==3){
                         String token = (String) data.get("token");
@@ -501,6 +580,7 @@ public class Launch extends AppCompatActivity {
 
                         String urlimageprofile = separated[0]+"_default.jpg";
 
+                        System.out.println("status load "+ jobj);
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                         String timestamp1  = dateFormat.format(new Date());
@@ -512,6 +592,10 @@ public class Launch extends AppCompatActivity {
                         try {
                             dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                             String timestamp = dateFormat.format(new Date());
+                            System.out.println("kksaskaks44444444444444"+avatar);
+
+                            System.out.println("status load 2"+ jobj);
+
                             new DownloadImageTask().execute(avatar);
                             new GetRoute().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp);
 
@@ -526,29 +610,48 @@ public class Launch extends AppCompatActivity {
 
                         imageDialog2.setView(layout);
                         imageDialog2.setCancelable(false);
-                        TextView TV28, TV29;
+                        TextView TV28, TV29, TV37;
+                        TV37 = (TextView)layout.findViewById(R.id.textView36);
+                        TV37.setText("Failed!!!");
+                        TV37.setTextSize(18);
+                        TV37.setTypeface(Regular);
+                        TV37.setTextColor(getResources().getColor(R.color.button));
+                        final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
                         TV28 = (TextView)layout.findViewById(R.id.textView28);
                         TV29 = (TextView)layout.findViewById(R.id.textView29);
                         TV28.setTypeface(Regular);
                         TV29.setTypeface(Semibold);
-                        TV28.setText("Email / password yang anda masukkan salah");
+                        TV28.setText("Incorrect email / password");
                         TV29.setText("OK");
-                        TV28.setTextSize(18);
-                        TV29.setTextSize(19);
+                        TV28.setTextSize(12);
+                        TV29.setTextSize(12);
 
                         final AlertDialog alertDialog;
                         alertDialog = imageDialog2.create();
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
 
-                        TV29.setOnClickListener(new View.OnClickListener() {
+                        frameLayout.setOnTouchListener(new View.OnTouchListener() {
                             @Override
-                            public void onClick(View view) {
-                                alertDialog.dismiss();
-                                Intent balik = new Intent(Launch.this,Launch.class);
-                                startActivity(balik);
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch ( event.getAction() ) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                        break;
+                                    case MotionEvent.ACTION_UP:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                        mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/wrongEmail/~923"+apkversion)
+                                                .setAction(uModel+"/"+uId)
+                                                .setLabel("incorrect/unregistered~email~address")
+                                                .build());
+                                        alertDialog.dismiss();
+                                        ad3.dismiss();
+                                        break;
+                                }
+                                return true;
                             }
                         });
+
                     }
 
 
@@ -560,29 +663,49 @@ public class Launch extends AppCompatActivity {
 
                     imageDialog2.setView(layout);
                     imageDialog2.setCancelable(false);
-                    TextView TV28, TV29;
+                    TextView TV28, TV29, TV37;
+
+                    TV37 = (TextView)layout.findViewById(R.id.textView36);
+                    TV37.setText("Failed!!!");
+                    TV37.setTextSize(18);
+                    TV37.setTypeface(Regular);
+                    TV37.setTextColor(getResources().getColor(R.color.basic));
+                    final FrameLayout frameLayout=(FrameLayout)layout.findViewById(R.id.frameLayout);
                     TV28 = (TextView)layout.findViewById(R.id.textView28);
                     TV29 = (TextView)layout.findViewById(R.id.textView29);
-                    TV28.setTypeface(Semibold);
-                    TV29.setTypeface(Regular);
+                    TV28.setTypeface(Regular);
+                    TV29.setTypeface(Semibold);
                     TV28.setText("Email / password yang anda masukkan salah");
                     TV29.setText("OK");
-                    TV28.setTextSize(18);
-                    TV29.setTextSize(19);
+                    TV28.setTextSize(12);
+                    TV29.setTextSize(12);
 
                     final AlertDialog alertDialog;
                     alertDialog = imageDialog2.create();
                     alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     alertDialog.show();
 
-                    TV29.setOnClickListener(new View.OnClickListener() {
+                    frameLayout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
-                        public void onClick(View view) {
-                            alertDialog.dismiss();
-                            Intent balik = new Intent(Launch.this,Launch.class);
-                            startActivity(balik);
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch ( event.getAction() ) {
+                                case MotionEvent.ACTION_DOWN:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                    alertDialog.dismiss();
+                                    mTracker.send(new HitBuilders.EventBuilder().setCategory("LoginPage~/wrongEmail/~923"+apkversion)
+                                            .setAction(uModel+"/"+uId)
+                                            .setLabel("incorrect/unregistered~email~address")
+                                            .build());
+                                    ad3.dismiss();
+                                    break;
+                            }
+                            return true;
                         }
                     });
+
                 }
 
 
@@ -684,21 +807,60 @@ public class Launch extends AppCompatActivity {
                 JSONObject jobjroute = new JSONObject(result);
                 String status = jobjroute.getString("status");
 
+                System.out.println("status load 3"+ jobjroute);
+
                 JSONObject dataRoute = jobjroute.getJSONObject("data");
                 JSONArray rute = dataRoute.getJSONArray("rute");
 
                 if (rute.length() == 0){
-                    nullRute.setMessage("You have no route");
+
+                    LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View layout = layoutInflater.inflate(R.layout.popupnotif, null);
+
+                    final AlertDialog alertDialog;
+                    nullRute.setView(layout);
                     nullRute.setCancelable(false);
-                    nullRute.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    alertDialog = nullRute.create();
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.show();
+
+                    TextView tv28, tv29, TV37;
+                    TV37 = (TextView)layout.findViewById(R.id.textView36);
+                    TV37.setText("Failed!!!");
+                    TV37.setTextSize(18);
+                    TV37.setTypeface(Regular);
+                    TV37.setTextColor(getResources().getColor(R.color.basic));
+                    final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
+                    tv28 = (TextView)layout.findViewById(R.id.textView28);
+                    tv29 = (TextView)layout.findViewById(R.id.textView29);
+
+                    tv28.setTextSize(12);
+                    tv29.setTextSize(12);
+
+
+                    tv28.setText("You have no route");
+                    tv29.setText("OK");
+
+                    tv28.setTypeface(Regular);
+                    tv29.setTypeface(Semibold);
+
+
+                    frameLayout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent login = new Intent(Launch.this,Launch.class);
-                            startActivity(login);
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch ( event.getAction() ) {
+                                case MotionEvent.ACTION_DOWN:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                    alertDialog.dismiss();
+                                    ad3.dismiss();
+                                    break;
+                            }
+                            return true;
                         }
                     });
-
-                    nullRute.create().show();
 
                 }
 
@@ -711,6 +873,8 @@ public class Launch extends AppCompatActivity {
                     routeID = route.getString("id");
                     dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     String timestamp = dateFormat.format(new Date());
+
+                    System.out.println("status load 4"+ routeID);
 
                     Context context = getApplicationContext();
                     appPrefs appPrefs = new appPrefs(context);
@@ -736,9 +900,12 @@ public class Launch extends AppCompatActivity {
         HttpURLConnection getRoute;
         URL url = null;
 
+
+
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
+            System.out.println("status load 5 ");
         }
 
         @Override
@@ -829,17 +996,31 @@ public class Launch extends AppCompatActivity {
             try {
                 jobjroute = new JSONObject(result);
 
+
+
                 JSONObject dataUser = jobjroute.getJSONObject("data");
                 JSONObject dataRute = dataUser.getJSONObject("rute");
+
+
+
                 customers = dataUser.getJSONArray("customers");
+
                 customer = dataRute.getJSONArray("customer");
                 contactNames = new String[customers.length()];
+
+
+
+
+                //System.out.println("testing "+customers.get(12));
+
 
                 awalfoto = new String[customers.length()];
                 path = new String[customers.length()][10];
 
                 for (int i =0; i<customers.length();i++){
                     JSONObject loopCustomers = customers.getJSONObject(i);
+
+                    System.out.println("status load 6 "+loopCustomers.getString("nama_depan"));
 
                     nama_depan = loopCustomers.getString("nama_depan");
                     nama_belakang = loopCustomers.getString("nama_belakang");
@@ -850,6 +1031,8 @@ public class Launch extends AppCompatActivity {
                     teleponStr = loopCustomers.getString("telepon_hp");
                     IDStr = loopCustomers.getString("id");
                     pelangganIDStr = loopCustomers.getString("pelanggan_id");
+
+
 
 
 
@@ -873,6 +1056,7 @@ public class Launch extends AppCompatActivity {
     public void storeImage(){
         try {
             String[] urlphotos = new String[customer.length()];
+            System.out.println("status load 7 "+customer.length());
             for (int j=0; j<customer.length();j++){
                 JSONObject loopCustomers = customers.getJSONObject(j);
 
@@ -914,6 +1098,7 @@ public class Launch extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            System.out.println("kksaskaks12112");
 
         }
 
@@ -922,30 +1107,42 @@ public class Launch extends AppCompatActivity {
 
             String imageURL = URL[0];
 
-            Bitmap bitmap = null;
+            Bitmap bitmap1 = null;
+
+            System.out.println("kksaskaksroziq "+URL[0]);
+            byte[] img=null;
+            //if (URL[0]!=null){
+            InputStream input = null;
+            //try {
             try {
+                input = new URL(imageURL).openStream();
+                System.out.println("kksaskaksroziq "+input);
 
-                byte[] img=null;
-                if (URL[0]!=null){
-                    InputStream input = new java.net.URL(URL[0]).openStream();
-                    // Decode Bitmap
-                    bitmap = BitmapFactory.decodeStream(input);
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                    img = bos.toByteArray();
-                    Bitmap bmp1 = BitmapFactory.decodeByteArray(img,0,img.length);
-                    Context context = getApplicationContext();
-                    appPrefs appPrefs = new appPrefs(context);
+                bitmap1 = BitmapFactory.decodeStream(input);
 
-                    String s = Base64.encodeToString(img, Base64.DEFAULT);
-                    appPrefs.setImage(s);
-                }
+                System.out.println("kksaskaks3333"+bitmap1);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                img = bos.toByteArray();
+                Bitmap bmp1 = BitmapFactory.decodeByteArray(img,0,img.length);
+                Context context = getApplicationContext();
+                appPrefs appPrefs = new appPrefs(context);
+                String s = Base64.encodeToString(img, Base64.DEFAULT);
+                appPrefs.setImage(s);
 
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return bitmap;
+
+
+                // Decode Bitmap
+
+
+           // } catch (IOException e) {
+            //    e.printStackTrace();
+            //}
+            return bitmap1;
         }
 
         @Override
@@ -964,23 +1161,25 @@ public class Launch extends AppCompatActivity {
         TextView TV31 = (TextView)layout2.findViewById(R.id.textView31);
         TextView TV32 = (TextView)layout2.findViewById(R.id.textView32);
         TextView TV33 = (TextView)layout2.findViewById(R.id.textView33);
-
-
+        TextView TV34 = (TextView)layout2.findViewById(R.id.textView34);
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             ad3.dismiss();
 
-            TV32.setText("Mohon tunggu, proses download sedang berjalan");
+            TV34.setText("Downloading data");
+            TV32.setText("Please wait, downloading process is running");
 
             TV31.setTypeface(Regular);
             TV32.setTypeface(Regular);
             TV33.setTypeface(Regular);
+            TV34.setTypeface(Regular);
 
-            TV31.setTextSize(19);
-            TV32.setTextSize(19);
-            TV33.setTextSize(19);
+            TV34.setTextSize(18);
+            TV31.setTextSize(12);
+            TV32.setTextSize(12);
+            TV33.setTextSize(12);
 
             alertdlgdownload.setView(layout2);
             alertdlgdownload.setCancelable(false);
@@ -988,13 +1187,6 @@ public class Launch extends AppCompatActivity {
             progressBar.setMax(customer.length());
             alertDialogdownload.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             alertDialogdownload.show();
-
-
-            //totalProgressTime=customer.length();
-
-            //progressDownloadImage.setMax(customer.length());
-            //progressDownloadImage.setCancelable(false);
-            //progressDownloadImage.show();
 
 
         }
@@ -1018,6 +1210,12 @@ public class Launch extends AppCompatActivity {
                     teleponStr = loopCustomers.getString("telepon_hp");
                     IDStr = loopCustomers.getString("id");
                     pelangganIDStr = loopCustomers.getString("pelanggan_id");
+                    jenis_pelanggan = loopCustomers.getString("jenis_pelanggan");
+                    program_pelanggan = loopCustomers.getString("program");
+
+                    if (program_pelanggan == null){
+                        program_pelanggan = "belum ada isinya";
+                    }
 
                     String nama_depan1 = nama_depan.toLowerCase();
                     String nama_belakang1 = nama_belakang.toLowerCase();
@@ -1046,6 +1244,8 @@ public class Launch extends AppCompatActivity {
 
                         SQLiteDatabase db = dbrute.getWritableDatabase();
 
+                        System.out.println("testing "+i+" "+cap);
+
                         ContentValues values = new ContentValues();
                         values.put("foto",s);
                         values.put("id",IDStr);
@@ -1054,6 +1254,8 @@ public class Launch extends AppCompatActivity {
                         values.put("telepon", teleponStr); // Shop Phone Number
                         values.put("lat", latitudes);
                         values.put("long",longitudes);
+                        values.put("spare1",jenis_pelanggan);
+                        values.put("spare2",program_pelanggan);
 
                         db.insert("DATA_PELANGGAN", null, values);
                         db.close();
@@ -1107,10 +1309,11 @@ public class Launch extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             alertDialogdownload.dismiss();
 
+
+
             Intent intent = new Intent(Launch.this, MainActivity.class);
             intent.putExtra("routeID",routeID);
             startActivity(intent);
-
 
         }
     }
@@ -1126,5 +1329,106 @@ public class Launch extends AppCompatActivity {
 
         System.out.println("persen "+persen/customer.length());
     }
+
+    AlertDialog backonprevious;
+    @Override
+    public void onBackPressed() {
+
+        LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.popupnotiftomboldua, null);
+
+        if (doubleBackToExitPressedOnce) {
+
+            AlertDialog.Builder backprevious = new AlertDialog.Builder(this);
+            backprevious.setView(layout);
+            TextView TV28, TV29, TV30, TV37;
+            TV37 = (TextView)layout.findViewById(R.id.textView37);
+            TV37.setText("Exit application");
+            TV37.setTextSize(18);
+            TV37.setTypeface(Regular);
+            TV37.setTextColor(getResources().getColor(R.color.basic));
+            final FrameLayout frameLayout, framelayout2;
+            frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
+            framelayout2 = (FrameLayout)layout.findViewById(R.id.frameLayout2);
+            TV28 = (TextView)layout.findViewById(R.id.textView28);
+            TV29 = (TextView)layout.findViewById(R.id.textView29);
+            TV30 = (TextView)layout.findViewById(R.id.textView30);
+
+            TV28.setTypeface(Regular);
+            TV29.setTypeface(Semibold);
+            TV30.setTypeface(Semibold);
+
+            TV28.setTextSize(12);
+            TV29.setTextSize(12);
+            TV30.setTextSize(12);
+
+            TV28.setText("Are you sure to quit ?");
+            TV29.setText("YES");
+            TV30.setText("NO");
+
+            backonprevious = backprevious.create();
+            backonprevious.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            backonprevious.show();
+
+            frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch ( event.getAction() ) {
+                        case MotionEvent.ACTION_DOWN:
+                            frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                            finishActivity();
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+            framelayout2.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch ( event.getAction() ) {
+                        case MotionEvent.ACTION_DOWN:
+                            framelayout2.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            framelayout2.setBackgroundColor(getResources().getColor(R.color.white));
+                            backonprevious.dismiss();
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+
+
+
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "tab back again to quit" , Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }*/
+    }
+
+    public void finishActivity(){
+        this.finishAffinity();
+    }
+
 
 }

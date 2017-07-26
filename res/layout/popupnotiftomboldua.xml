@@ -6,12 +6,12 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/custombackgroundpopup"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp">
 
 
         <TextView
@@ -22,6 +22,18 @@
             android:textColor="@color/black"
             android:background="@null"
             android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:id="@+id/textView37" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:background="@null"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -29,7 +41,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:background="@color/grey"/>
 
         <LinearLayout
@@ -38,36 +50,49 @@
             android:layout_height="match_parent"
             >
 
-            <TextView
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:id="@+id/textView29"
-                android:textColor="@color/basic"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                />
+                android:id="@+id/frameLayout"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:id="@+id/textView29"
+                    android:textColor="@color/basic"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    />
+            </FrameLayout>
 
             <View
-                android:layout_width="1dp"
+                android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:background="@color/grey"
                 />
 
-            <TextView
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:id="@+id/textView30"
-                android:layout_gravity="center"
-                android:textColor="@color/basic"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                />
+                android:id="@+id/frameLayout2"
+                android:layout_weight="0.5">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:id="@+id/textView30"
+                    android:layout_gravity="center"
+                    android:textColor="@color/basic"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    />
+            </FrameLayout>
 
 
         </LinearLayout>

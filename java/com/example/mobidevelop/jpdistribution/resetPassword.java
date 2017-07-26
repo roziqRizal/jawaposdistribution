@@ -1,6 +1,7 @@
 package com.example.mobidevelop.jpdistribution;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,12 +9,14 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +25,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import org.json.JSONException;
@@ -63,11 +69,30 @@ public class resetPassword extends AppCompatActivity {
     TextView canceltext, resettext, topbartitle, resettitle, info1, info2;
     Typeface Semibold, Regular;
 
+    String uId, uModel, apkversion = "/~9927";
+
+    private Tracker mTracker;
+
+
+    synchronized public Tracker getDefaultTracker(){
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password2);
+
+        overridePendingTransition(R.anim.startanim,R.anim.stopanim);
+
+        uId = Build.BRAND;
+        uModel = Build.MODEL;
 
         resettext = (TextView) findViewById(R.id.textView7);
         canceltext = (TextView) findViewById(R.id.textView8);
@@ -97,6 +122,15 @@ public class resetPassword extends AppCompatActivity {
             }
         });
 
+        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                mTracker.send(new HitBuilders.EventBuilder().setCategory("ResetPassword~/emailColumn/~923"+apkversion)
+                        .setAction(uModel+"/"+uId)
+                        .build());
+            }
+        });
+
         resettext.setTypeface(Semibold);
         canceltext.setTypeface(Semibold);
         topbartitle.setTypeface(Regular);
@@ -104,43 +138,83 @@ public class resetPassword extends AppCompatActivity {
         info1.setTypeface(Regular);
         info2.setTypeface(Regular);
 
+        Context context = getApplicationContext();
+        appPrefs appPrefs = new appPrefs(context);
+        String first_name = appPrefs.getFirstname();
+        String last_name = appPrefs.getLastname();
+
+        resetPassword application = resetPassword.this;
+        mTracker = application.getDefaultTracker();
+
+        Log.i("Reset Password", "Setting screen name: " + first_name+" "+last_name);
+        mTracker.setScreenName("ResetPassword~"+""+uId+"/"+uModel+"_"+apkversion);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
 
         dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         final String timestamp = dateFormat.format(new Date());
 
+
         cancel = (FrameLayout) findViewById(R.id.button3);
-        cancel.setOnClickListener(new View.OnClickListener() {
+        save = (FrameLayout) findViewById(R.id.button2);
+        cancel.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        cancel.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        cancel.setBackgroundColor(getResources().getColor(R.color.white));
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("ResetPassword~/cancelButton/~923"+apkversion)
+                                .setAction(uModel+"/"+uId)
+                                .build());
+                        onBackPressed();
+                        break;
+                }
+                return true;
             }
         });
 
-        save = (FrameLayout) findViewById(R.id.button2);
-        save.setOnClickListener(new View.OnClickListener() {
+
+
+        save.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                try {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch ( event.getAction() ) {
+                    case MotionEvent.ACTION_DOWN:
+                        save.setBackgroundColor(getResources().getColor(R.color.darkbutton));
 
-                    LayoutInflater layoutInflater3 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                    View layout3 = layoutInflater3.inflate(R.layout.downloadprogres, null);
-                    mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout3.findViewById(R.id.progress);
-                    mDilatingDotsProgressBar.show();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        save.setBackgroundColor(getResources().getColor(R.color.button));
+                        try {
+                            mTracker.send(new HitBuilders.EventBuilder().setCategory("ResetPassword~/saveButton/~923"+apkversion)
+                                    .setAction(uModel+"/"+uId)
+                                    .build());
 
-                    imageDialog3.setView(layout3);
-                    imageDialog3.setCancelable(false);
-                    ad3 = imageDialog3.create();
-                    ad3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    ad3.show();
+                            LayoutInflater layoutInflater3 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            View layout3 = layoutInflater3.inflate(R.layout.downloadprogres, null);
+                            mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout3.findViewById(R.id.progress);
+                            mDilatingDotsProgressBar.show();
 
-                    email = emailText.getText().toString();
-                    String fakeemail = "roziqrizal881992@gmail.com";
+                            imageDialog3.setView(layout3);
+                            imageDialog3.setCancelable(false);
+                            ad3 = imageDialog3.create();
+                            ad3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            ad3.show();
 
-                    new resetAsyntask().execute(email,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp);
+                            email = emailText.getText().toString();
+                            String fakeemail = "roziqrizal881992@gmail.com";
 
-                } catch (SignatureException e) {
-                    e.printStackTrace();
+                            new resetAsyntask().execute(email,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp);
+
+                        } catch (SignatureException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
+                return true;
             }
         });
 
@@ -277,29 +351,48 @@ public class resetPassword extends AppCompatActivity {
 
                         imagedialog.setView(layout);
                         imagedialog.setCancelable(false);
-                        TextView TV28, TV29;
+                        TextView TV28, TV29, TV36;
+                        final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
                         TV28 = (TextView)layout.findViewById(R.id.textView28);
                         TV29 = (TextView)layout.findViewById(R.id.textView29);
+                        TV36 = (TextView)layout.findViewById(R.id.textView36);
+                        TV36.setTypeface(Regular);
                         TV28.setTypeface(Regular);
                         TV29.setTypeface(Semibold);
-                        TV28.setText("Password anda sudah berganti. silahkan cek email anda!");
+                        TV36.setText("Success!!!");
+                        TV28.setText("Your password has been successfully changed");
                         TV29.setText("OK");
-                        TV28.setTextSize(18);
-                        TV29.setTextSize(19);
+                        TV36.setTextSize(15);
+                        TV28.setTextSize(12);
+                        TV29.setTextSize(12);
+
+                        TV36.setTextColor(getResources().getColor(R.color.basic));
 
                         final AlertDialog alertDialog;
                         alertDialog = imagedialog.create();
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
 
-                        TV29.setOnClickListener(new View.OnClickListener() {
+
+                        frameLayout.setOnTouchListener(new View.OnTouchListener() {
                             @Override
-                            public void onClick(View view) {
-                                ad3.dismiss();
-                                alertDialog.dismiss();
-                                onBackPressed();
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch ( event.getAction() ) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+
+                                        break;
+                                    case MotionEvent.ACTION_UP:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                        ad3.dismiss();
+                                        alertDialog.dismiss();
+                                        onBackPressed();
+                                        break;
+                                }
+                                return true;
                             }
                         });
+
 
 
 /*                        imagedialog.setMessage("Password anda sudah berganti. silahkan cek email anda!");
@@ -320,39 +413,52 @@ public class resetPassword extends AppCompatActivity {
 
                         imagedialog.setView(layout);
                         imagedialog.setCancelable(false);
-                        TextView TV28, TV29;
+                        TextView TV28, TV29, TV36;
+                        final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
                         TV28 = (TextView)layout.findViewById(R.id.textView28);
                         TV29 = (TextView)layout.findViewById(R.id.textView29);
+                        TV36 = (TextView)layout.findViewById(R.id.textView36);
+                        TV36.setTypeface(Regular);
                         TV28.setTypeface(Regular);
                         TV29.setTypeface(Semibold);
-                        TV28.setText("Alamat email yang anda masukkan salah / belum terdaftar");
+                        TV36.setText("Failed!!!");
+                        TV28.setText("The email address you entered is incorrect / not registered. Please enter your email again");
                         TV29.setText("OK");
-                        TV28.setTextSize(18);
-                        TV29.setTextSize(19);
+                        TV36.setTextSize(15);
+                        TV28.setTextSize(12);
+                        TV29.setTextSize(12);
+
+                        TV36.setTextColor(getResources().getColor(R.color.button));
 
                         final AlertDialog alertDialog;
                         alertDialog = imagedialog.create();
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
 
-                        TV29.setOnClickListener(new View.OnClickListener() {
+
+                        frameLayout.setOnTouchListener(new View.OnTouchListener() {
                             @Override
-                            public void onClick(View view) {
-                                ad3.dismiss();
-                                alertDialog.dismiss();
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch ( event.getAction() ) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                        break;
+                                    case MotionEvent.ACTION_UP:
+                                        frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                        mTracker.send(new HitBuilders.EventBuilder().setCategory("ResetPassword~/failReset/~923"+apkversion)
+                                                .setAction(uModel+"/"+uId)
+                                                .setLabel("incorrect/unregistered~email~address")
+                                                .build());
+                                        ad3.dismiss();
+                                        alertDialog.dismiss();
+                                        break;
+                                }
+                                return true;
                             }
                         });
 
-/*                        ad3.dismiss();
-                        imagedialog4.setMessage("Alamat email yang anda masukkan salah / belum terdaftar");
-                        imagedialog4.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                            }
-                        });
-                        imagedialog4.create().show();
-*/                    }
+                    }
 
                 }
 
@@ -363,28 +469,50 @@ public class resetPassword extends AppCompatActivity {
 
                     imagedialog.setView(layout);
                     imagedialog.setCancelable(false);
-                    TextView TV28, TV29;
+                    TextView TV28, TV29, TV36;
+                    final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
                     TV28 = (TextView)layout.findViewById(R.id.textView28);
                     TV29 = (TextView)layout.findViewById(R.id.textView29);
+                    TV36 = (TextView)layout.findViewById(R.id.textView36);
+                    TV36.setTypeface(Regular);
                     TV28.setTypeface(Regular);
                     TV29.setTypeface(Semibold);
-                    TV28.setText("Field email belum diisi");
+                    TV36.setText("Failed!!!");
+                    TV28.setText("Email field is empty");
                     TV29.setText("OK");
-                    TV28.setTextSize(18);
-                    TV29.setTextSize(19);
+                    TV36.setTextSize(15);
+                    TV28.setTextSize(12);
+                    TV29.setTextSize(12);
+
+                    TV36.setTextColor(getResources().getColor(R.color.button));
 
                     final AlertDialog alertDialog;
                     alertDialog = imagedialog.create();
                     alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     alertDialog.show();
 
-                    TV29.setOnClickListener(new View.OnClickListener() {
+                    frameLayout.setOnTouchListener(new View.OnTouchListener() {
                         @Override
-                        public void onClick(View view) {
-                            ad3.dismiss();
-                            alertDialog.dismiss();
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch ( event.getAction() ) {
+                                case MotionEvent.ACTION_DOWN:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                    mTracker.send(new HitBuilders.EventBuilder().setCategory("ResetPassword~/failReset/~923"+apkversion)
+                                            .setAction(uModel+"/"+uId)
+                                            .setLabel("email~./column~./empty")
+                                            .build());
+                                    ad3.dismiss();
+                                    alertDialog.dismiss();
+                                    break;
+                            }
+                            return true;
                         }
                     });
+
 /*                    ad3.dismiss();
                     imagedialog2.setMessage("Field email belum diisi");
                     imagedialog2.setPositiveButton("OK", new DialogInterface.OnClickListener() {

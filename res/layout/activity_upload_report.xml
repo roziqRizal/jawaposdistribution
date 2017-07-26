@@ -1,12 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.mobidevelop.jpdistribution.uploadReport">
+    tools:openDrawer="start">
+
+    <include
+        layout="@layout/content_upload_report"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="false"
+        android:background="@color/basic"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/headerNavBar">
+
+                <ImageView
+                    android:layout_width="74dp"
+                    android:layout_height="74dp"
+                    android:id="@+id/picture"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/profile"
+                    android:layout_marginTop="23dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/username"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="12sp"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="15dp"
+                    android:text="username"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
 
 
-    <include layout="@layout/content_upload_report" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/headerNavBar"
+                android:id="@+id/editProfileLayout">
 
-</android.support.design.widget.CoordinatorLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <FrameLayout android:layout_height="match_parent"
+                        android:layout_width="52dp">
+
+                        <ImageView
+                            app:srcCompat="@drawable/editprofilenonav"
+                            android:id="@+id/imageView6"
+                            android:layout_gravity="center"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/editprofil"
+                        android:layout_gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:text="Edit Profile"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="22dp"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/editProfileLayout"
+                android:id="@+id/changepasswordLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <FrameLayout android:layout_height="match_parent"
+                        android:layout_width="52dp">
+
+                        <ImageView
+                            app:srcCompat="@drawable/changepasswordnonav"
+                            android:id="@+id/dualah"
+                            android:layout_gravity="center"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/changepassword"
+                        android:layout_gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:text="Change Password"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="22dp"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator"
+                    android:layout_marginTop="2dp"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/changepasswordLayout"
+                android:id="@+id/logoutLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <FrameLayout android:layout_height="match_parent"
+                        android:layout_width="52dp">
+
+                        <ImageView
+                            app:srcCompat="@drawable/logoutnonav"
+                            android:id="@+id/tigalah"
+                            android:layout_gravity="center"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/logout"
+                        android:layout_gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:text="Log Out"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="22dp"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/separator"
+                    android:layout_marginTop="2dp"/>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:text="© 2016 Jawa Pos Group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/textView19"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:layout_alignParentBottom="true"/>
+
+
+        </RelativeLayout>
+
+    </android.support.design.widget.NavigationView>
+
+
+
+
+
+
+</android.support.v4.widget.DrawerLayout>
+
