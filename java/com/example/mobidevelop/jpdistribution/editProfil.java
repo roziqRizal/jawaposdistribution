@@ -351,7 +351,6 @@ public class editProfil extends AppCompatActivity {
                         String avatar = null;
                         dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                         String timestamp = dateFormat.format(new Date());
-                        System.out.println("publik token"+PublicToken);
                         try {
                             new editProfile().execute(firstN,lastN,address,avatar,mail,hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"),timestamp, PublicToken);
                         } catch (SignatureException e) {
@@ -475,7 +474,6 @@ public class editProfil extends AppCompatActivity {
                 }
 
 
-                System.out.println("isi avatar = "+a);
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("first_name", params[0])
                         .appendQueryParameter("last_name", params[1])
@@ -507,8 +505,6 @@ public class editProfil extends AppCompatActivity {
                 int response_code = getRoute.getResponseCode();
                 if (response_code == HttpURLConnection.HTTP_OK) {
 
-                    System.out.println("asdasdasdadas"+response_code);
-                    System.out.println("asdasdasdadas"+HttpURLConnection.HTTP_OK);
 
                     InputStream input = getRoute.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -616,7 +612,6 @@ public class editProfil extends AppCompatActivity {
                     conv_bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                     byte[] img = bos.toByteArray();
                     uploadprofile = Base64.encodeToString(img, Base64.DEFAULT);
-                    System.out.println("asdasdasdadas"+uploadprofile);
 
                     //profileuser.setBackgroundColor(getResources().getColor(R.color.black));
                     profileuser.setImageBitmap(conv_bm);
@@ -666,7 +661,6 @@ public class editProfil extends AppCompatActivity {
         String res = null;
         String[] proj = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        System.out.println("ssssssssssss"+cursor);
         if (cursor.moveToFirst()) {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             res = cursor.getString(column_index);
@@ -694,7 +688,6 @@ public class editProfil extends AppCompatActivity {
                 byte[] img=null;
                 if (URL[0]!=null){
                     InputStream input = new java.net.URL(URL[0]).openStream();
-                    System.out.println("asdasdasdadas"+URL[0]);
                     // Decode Bitmap
                     bitmap = BitmapFactory.decodeStream(input);
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -702,14 +695,12 @@ public class editProfil extends AppCompatActivity {
                     img = bos.toByteArray();
                     Bitmap bmp1 = BitmapFactory.decodeByteArray(img,0,img.length);
 
-                    System.out.println("ini img = "+img);
                     Context context = getApplicationContext();
                     appPrefs appPrefs = new appPrefs(context);
 
                     String s = Base64.encodeToString(img, Base64.DEFAULT);
                     appPrefs.setImage(s);
 
-                    System.out.println("ini avatar 2 = "+bmp1);
 
                 }
 
@@ -721,7 +712,6 @@ public class editProfil extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
-            System.out.println("ini ="+result);
 
             LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
             View layout = layoutInflater.inflate(R.layout.popupnotif, null);

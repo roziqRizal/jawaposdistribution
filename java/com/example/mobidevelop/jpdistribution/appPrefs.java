@@ -3,7 +3,6 @@ package com.example.mobidevelop.jpdistribution;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.View;
 
 
 /**

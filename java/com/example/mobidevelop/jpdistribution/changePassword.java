@@ -133,7 +133,6 @@ public class changePassword extends AppCompatActivity {
         });
 
         gone = false;
-        System.out.println("Touch Down"+gone);
 
         old.setTypeface(Regulartype);
         newPass.setTypeface(Regulartype);
@@ -308,7 +307,6 @@ public class changePassword extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            System.out.println("fdsfdsfsd"+"ssssukses");
 
         }
 
@@ -324,7 +322,6 @@ public class changePassword extends AppCompatActivity {
             }
             try {
                 getRoute = (HttpURLConnection)url.openConnection();
-                System.out.println("fdsfdsfsd"+getRoute);
                 getRoute.setReadTimeout(10000);
                 getRoute.setConnectTimeout(15000);
                 getRoute.setRequestMethod("POST");
@@ -357,9 +354,7 @@ public class changePassword extends AppCompatActivity {
             try {
 
                 int response_code = getRoute.getResponseCode();
-                System.out.println("fdsfdsfsd"+response_code);
-                System.out.println("fdsfdsfsd"+HttpURLConnection.HTTP_OK);
-                if (response_code == HttpURLConnection.HTTP_OK) {
+                 if (response_code == HttpURLConnection.HTTP_OK) {
 
                     InputStream input = getRoute.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -390,7 +385,6 @@ public class changePassword extends AppCompatActivity {
         protected void onPostExecute(String result) {
             try {
                 JSONObject jobj = new JSONObject(result);
-                System.out.println("fdsfdsfsd"+result);
                 int status = (Integer) jobj.get("status");
 
                 final AlertDialog alertDialog;

@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
     public int awal = 0, customerFinished = 0;
     public String[] timerFinished, nama, address, phone, photos, idDB, latitudes, longitudes, circlestring, circlestring2, reasontextcomment, jenis_pelanggan, program_pelanggan, circlestring2forredmarker, donenotification, databaseIdSaving, databaseIdSavingSkip, databaseContentComment;
     public int[]  circlestringroute,databaseIdComment;
-    Intent intent2;
+    Intent intent2, serviceIntent;
     Circle[] circle;
     LinearLayout segmentedButton, tandaPek, rowFix, rowContent, right, center, center1,center2,center3 , left, editprofile,changepassword, logout, tableLayout, optiondoneskipcommentstop;
     EditText reason;
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity
             if (minnotif==1){
                 timeInMilliseconds = SystemClock.uptimeMillis() - starttime;
                 updatedtime = timeSwapBuff + timeInMilliseconds;
-                secs = (int) (updatedtime / 1);
+                secs = (int) (updatedtime / 1000);
                 mins = minscontinue+secs / 60;
                 hour = hourscontinue+mins / 60;
                 secs = secs % 60;
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity
             else {
                 timeInMilliseconds = SystemClock.uptimeMillis() - starttime;
                 updatedtime = timeSwapBuff + timeInMilliseconds;
-                secs = (int) (updatedtime / 1);
+                secs = (int) (updatedtime / 1000);
                 mins = secs / 60;
                 hour = mins / 60;
                 secs = secs % 60;
@@ -306,6 +306,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(MainActivity.this));
+
+        serviceIntent = new Intent(MainActivity.this, ServiceGPS.class);
+        startService(new Intent(this, ServiceGPS.class));
+
 
         LayoutInflater donebutton = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View donebuttonlayout = donebutton.inflate(R.layout.downloadprogres, null);
@@ -1160,6 +1164,11 @@ public class MainActivity extends AppCompatActivity
     android.location.LocationListener loclistener = new android.location.LocationListener() {
         public void onLocationChanged(Location location) {
 
+            if (minnotif!=0){
+                minnotif=0;
+                pressstartbutton();
+            }
+
             if (MOUser.getIcon()!=null){
                 circleprocesspage.dismiss();
             }
@@ -1179,7 +1188,6 @@ public class MainActivity extends AppCompatActivity
 
             Calendar c = Calendar.getInstance();
             int seconds = c.get(Calendar.SECOND);
-            System.out.println("second "+seconds);
 
             appPrefs appPrefs = new appPrefs(context);
 
@@ -1292,10 +1300,12 @@ public class MainActivity extends AppCompatActivity
             mTask = new LifeTracking();
             if (endpointvalue==0){
                 if (seconds == 0 || seconds == 10 || seconds == 20 || seconds == 30 || seconds == 40 || seconds == 50){
+
+                    //serviceIntent.putExtra("latitude",location.getLatitude());
+                    //serviceIntent.putExtra("longitude",location.getLongitude());
                     try {
 
                         new LifeTracking().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), timestamp);
-                        System.out.println("second responsesss "+location.getLatitude()+" "+location.getLongitude());
 
                     } catch (SignatureException e) {
                         e.printStackTrace();
@@ -1717,7 +1727,7 @@ public class MainActivity extends AppCompatActivity
 
                     while ((line = reader.readLine()) != null) {
                         result.append(line);
-                        //System.out.println("responsesss "+result);
+
                     }
 
 
@@ -1888,60 +1898,7 @@ public class MainActivity extends AppCompatActivity
                             break;
                         case MotionEvent.ACTION_UP:
                             start.setBackgroundColor(getResources().getColor(R.color.button));
-
-                            mTracker.send(new HitBuilders.EventBuilder().setCategory("MainActivity~/startButton/~923"+apkversion)
-                                    .setAction(signHashCodeEmail)
-                                    .setLabel(uModel+"/"+uId)
-                                    .build());
-                            starttrackingbutton=1;
-                            continuedatabase = 0;
-
-                            start.setVisibility(View.INVISIBLE);
-                            optiondoneskipcommentstop.setVisibility(View.VISIBLE);
-                            stop.setVisibility(View.VISIBLE);
-                            done.setVisibility(View.VISIBLE);
-                            skip.setVisibility(View.VISIBLE);
-
-                            LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                            View layout2 = layoutInflater2.inflate(R.layout.downloadprogres, null);
-                            mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout2.findViewById(R.id.progress);
-                            mDilatingDotsProgressBar.show();
-
-                            imageDialog2.setView(layout2);
-                            imageDialog2.setCancelable(false);
-                            ad2 = imageDialog2.create();
-                            ad2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            ad2.show();
-
-                            appPrefs appPrefs = new appPrefs(context);
-
-                            Intent myIntent = getIntent();
-                            routeID = appPrefs.getRouteID();
-
-                            dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            String timestamp = dateFormat.format(new Date());
-
-
-                            starttime = SystemClock.uptimeMillis();
-                            handler.postDelayed(updateTimer, 60);
-
-                            try {
-                                new startTracking().execute(PublicToken, hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp, routeID);
-                            } catch (SignatureException e) {
-                                e.printStackTrace();
-                            }
-
-                            nMap.clear();
-                            listindex=0;
-                            circleadding=0;
-                            if (cursorUpload.getCount()==0){
-                                datamarker(awal);
-                            }
-                            else {
-                                datamarker(awaldatabase);
-                            }
-
-
+                            pressstartbutton();
                             break;
                     }
                     return true;
@@ -2148,6 +2105,60 @@ public class MainActivity extends AppCompatActivity
         String last_name = myIntent.getStringExtra("last_name");
         //circleprocesspage.dismiss();
 
+    }
+
+    public void pressstartbutton(){
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("MainActivity~/startButton/~923"+apkversion)
+                .setAction(signHashCodeEmail)
+                .setLabel(uModel+"/"+uId)
+                .build());
+        starttrackingbutton=1;
+        continuedatabase = 0;
+
+        start.setVisibility(View.INVISIBLE);
+        optiondoneskipcommentstop.setVisibility(View.VISIBLE);
+        stop.setVisibility(View.VISIBLE);
+        done.setVisibility(View.VISIBLE);
+        skip.setVisibility(View.VISIBLE);
+
+        LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout2 = layoutInflater2.inflate(R.layout.downloadprogres, null);
+        mDilatingDotsProgressBar = (DilatingDotsProgressBar) layout2.findViewById(R.id.progress);
+        mDilatingDotsProgressBar.show();
+
+        imageDialog2.setView(layout2);
+        imageDialog2.setCancelable(false);
+        ad2 = imageDialog2.create();
+        ad2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        ad2.show();
+
+        appPrefs appPrefs = new appPrefs(context);
+
+        Intent myIntent = getIntent();
+        routeID = appPrefs.getRouteID();
+
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = dateFormat.format(new Date());
+
+
+        starttime = SystemClock.uptimeMillis();
+        handler.postDelayed(updateTimer, 60);
+
+        try {
+            new startTracking().execute(PublicToken, hashMac(timestamp,"0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp, routeID);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
+
+        nMap.clear();
+        listindex=0;
+        circleadding=0;
+        if (cursorUpload.getCount()==0){
+            datamarker(awal);
+        }
+        else {
+            datamarker(awaldatabase);
+        }
     }
 
     public static <T> int getLength(T[] arr){

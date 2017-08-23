@@ -580,8 +580,6 @@ public class Launch extends AppCompatActivity {
 
                         String urlimageprofile = separated[0]+"_default.jpg";
 
-                        System.out.println("status load "+ jobj);
-
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                         String timestamp1  = dateFormat.format(new Date());
 
@@ -592,9 +590,6 @@ public class Launch extends AppCompatActivity {
                         try {
                             dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                             String timestamp = dateFormat.format(new Date());
-                            System.out.println("kksaskaks44444444444444"+avatar);
-
-                            System.out.println("status load 2"+ jobj);
 
                             new DownloadImageTask().execute(avatar);
                             new GetRoute().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp);
@@ -807,8 +802,6 @@ public class Launch extends AppCompatActivity {
                 JSONObject jobjroute = new JSONObject(result);
                 String status = jobjroute.getString("status");
 
-                System.out.println("status load 3"+ jobjroute);
-
                 JSONObject dataRoute = jobjroute.getJSONObject("data");
                 JSONArray rute = dataRoute.getJSONArray("rute");
 
@@ -874,8 +867,6 @@ public class Launch extends AppCompatActivity {
                     dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     String timestamp = dateFormat.format(new Date());
 
-                    System.out.println("status load 4"+ routeID);
-
                     Context context = getApplicationContext();
                     appPrefs appPrefs = new appPrefs(context);
                     appPrefs.setgetRouteID(routeID);
@@ -905,8 +896,7 @@ public class Launch extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            System.out.println("status load 5 ");
-        }
+         }
 
         @Override
         protected void onProgressUpdate(Integer... progress) {
@@ -1011,7 +1001,6 @@ public class Launch extends AppCompatActivity {
 
 
 
-                //System.out.println("testing "+customers.get(12));
 
 
                 awalfoto = new String[customers.length()];
@@ -1020,7 +1009,6 @@ public class Launch extends AppCompatActivity {
                 for (int i =0; i<customers.length();i++){
                     JSONObject loopCustomers = customers.getJSONObject(i);
 
-                    System.out.println("status load 6 "+loopCustomers.getString("nama_depan"));
 
                     nama_depan = loopCustomers.getString("nama_depan");
                     nama_belakang = loopCustomers.getString("nama_belakang");
@@ -1056,8 +1044,7 @@ public class Launch extends AppCompatActivity {
     public void storeImage(){
         try {
             String[] urlphotos = new String[customer.length()];
-            System.out.println("status load 7 "+customer.length());
-            for (int j=0; j<customer.length();j++){
+             for (int j=0; j<customer.length();j++){
                 JSONObject loopCustomers = customers.getJSONObject(j);
 
                 JSONArray photos = loopCustomers.getJSONArray("photos");
@@ -1098,7 +1085,6 @@ public class Launch extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            System.out.println("kksaskaks12112");
 
         }
 
@@ -1109,18 +1095,15 @@ public class Launch extends AppCompatActivity {
 
             Bitmap bitmap1 = null;
 
-            System.out.println("kksaskaksroziq "+URL[0]);
             byte[] img=null;
             //if (URL[0]!=null){
             InputStream input = null;
             //try {
             try {
                 input = new URL(imageURL).openStream();
-                System.out.println("kksaskaksroziq "+input);
 
                 bitmap1 = BitmapFactory.decodeStream(input);
 
-                System.out.println("kksaskaks3333"+bitmap1);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                 img = bos.toByteArray();
@@ -1244,7 +1227,6 @@ public class Launch extends AppCompatActivity {
 
                         SQLiteDatabase db = dbrute.getWritableDatabase();
 
-                        System.out.println("testing "+i+" "+cap);
 
                         ContentValues values = new ContentValues();
                         values.put("foto",s);
@@ -1327,7 +1309,6 @@ public class Launch extends AppCompatActivity {
 
         double persen = inputan/customer.length();
 
-        System.out.println("persen "+persen/customer.length());
     }
 
     AlertDialog backonprevious;

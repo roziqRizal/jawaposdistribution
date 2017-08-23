@@ -217,11 +217,9 @@ public class ImageLaunch extends AppCompatActivity {
         Toast.makeText(context, "find user location...", Toast.LENGTH_LONG).show();
 
 
-        System.out.println(PublicToken);
 
         if (currentapiVersion >= 23) {
             insertDummyContactWrapper();
-            System.out.println("sdk version " + currentapiVersion);
         }
 
         pressagain.setClickable(false);
@@ -232,7 +230,6 @@ public class ImageLaunch extends AppCompatActivity {
                 try {
                     new GetRoute().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp);
                     pressagain.setClickable(false);
-                    System.out.println("click");
                 } catch (SignatureException e) {
                     e.printStackTrace();
                 }
@@ -294,7 +291,6 @@ public class ImageLaunch extends AppCompatActivity {
                 10000, (android.location.LocationListener) loclistener);
         location = locmgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        System.out.println("location " + location);
 
     }
 
@@ -384,7 +380,6 @@ public class ImageLaunch extends AppCompatActivity {
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            System.out.println("1");
 
         }
 
@@ -403,8 +398,6 @@ public class ImageLaunch extends AppCompatActivity {
                 jawapos = (HttpURLConnection)url2.openConnection();
                 jawapos.connect();
 
-                System.out.println("jawapos = "+jawapos.getResponseMessage() );
-
                 getRoute = (HttpURLConnection)url.openConnection();
                 getRoute.setReadTimeout(READ_TIMEOUT);
                 getRoute.setConnectTimeout(CONNECTION_TIMEOUT);
@@ -412,14 +405,12 @@ public class ImageLaunch extends AppCompatActivity {
                 getRoute.setDoInput(true);
                 getRoute.setDoOutput(true);
 
-                System.out.println("2");
 
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("token", params[0])
                         .appendQueryParameter("sign", params[1])
                         .appendQueryParameter("timestamp",params[2]);
                 String query = builder.build().getEncodedQuery();
-                System.out.println(builder);
 
                 OutputStream os = getRoute.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -472,10 +463,8 @@ public class ImageLaunch extends AppCompatActivity {
         protected void onPostExecute(String result) {
             try {
 
-                System.out.println(result);
                 JSONObject jobjroute = new JSONObject(result);
                 String status = jobjroute.getString("status");
-                System.out.println(status);
 
                 getLocation();
 
@@ -539,7 +528,6 @@ public class ImageLaunch extends AppCompatActivity {
                         SQLiteDatabase db = dbrute.getWritableDatabase();
                         db.delete("DATA_PELANGGAN",null,null);
                         db.close();
-                        System.out.println("sukses");
                         Intent backToLogin = new Intent(ImageLaunch.this,Launch.class);
                         startActivity(backToLogin);
 

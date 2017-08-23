@@ -101,7 +101,7 @@ public class uploadReport extends AppCompatActivity {
     public String[]  nama, address, phone, alasan, timer, idDB, reasontextcomment, reasontextcomment2, distances, longitudesposition,latitudeposition,presstype,doneskipcomment,doneskipnotif;
     int[] coba;
     String total;
-    int customerFinished = 0;
+    int customerFinished = 0, failedconn=0;
     TableLayout tableLayout;
     TextView addressTable, alamat, telepon, status, deliveryPoint, checkBox, durasi, durasifix,deliverypointfix, Point2,Point3, TV4, TV5, TV, TV23, TV14, TV24, TV3, TV25, TV26;
     String customer, ambilDurasi;
@@ -337,7 +337,6 @@ public class uploadReport extends AppCompatActivity {
         initdua();
         //init();
 
-        System.out.println("dadas " +yangbelum2);
 
         if (cursorUpload.getCount()<cursorData.getCount()){
             yangbelum = cursorData.getCount()-cursorUpload.getCount()+yangbelum2;
@@ -372,10 +371,6 @@ public class uploadReport extends AppCompatActivity {
             upload.setVisibility(View.INVISIBLE);
         }
 
-        System.out.println("customer finished "+customerFinished+" "+yangbelum);
-
-
-        System.out.println(Arrays.deepToString(doneCustomer));
 
 
         upload.setOnClickListener(new View.OnClickListener() {
@@ -396,7 +391,7 @@ public class uploadReport extends AppCompatActivity {
                 appPrefs.setDurasihour("");
                 appPrefs.setDurasimins("");
 
-                System.out.println("ini ID"+ startID);
+
                 //scrollView.setVisibility(View.INVISIBLE);
                 //scrollViewframe2.setVisibility(View.VISIBLE);
                 try {
@@ -581,16 +576,10 @@ public class uploadReport extends AppCompatActivity {
             for (int j=0;j<coba.length;j++){
                 cursorreason.moveToPosition(j);
                 if (coba[j]==Integer.parseInt(reasontextcomment2[i])){
-                    System.out.println("coba indeks yang sama adalah "+coba[j]);
-                    reasontextcomment[i]=cursorreason.getString(0).toString();
+                   reasontextcomment[i]=cursorreason.getString(0).toString();
                 }
             }
         }
-
-        System.out.println("coba 2 "+Arrays.deepToString(reasontextcomment2));
-        System.out.println("coba "+Arrays.deepToString(reasontextcomment));
-
-
 
 
 
@@ -626,7 +615,6 @@ public class uploadReport extends AppCompatActivity {
                 commentimage.setImageResource(R.drawable.commentnewbgt);
             }*/
 
-            System.out.println("mose = "+Arrays.deepToString(reasontextcomment));
 
             if (reasontextcomment[i]!=null){
                 commentimage.setImageResource(R.drawable.commentnewbgt);
@@ -662,12 +650,9 @@ public class uploadReport extends AppCompatActivity {
                     TV4.setTextSize(12);
                     TV5.setTextSize(12);
 
-                    System.out.println(loopingCursor);
 
                     reason = (EditText)layout.findViewById(R.id.reasonEdit);
                     reason.setTypeface(SourceSansProRegular);
-                    System.out.println("roziq "+Arrays.deepToString(reasontextcomment));
-                    System.out.println("roziq "+finalI);
                     reason.setText(reasontextcomment[finalI],TextView.BufferType.EDITABLE);
 
                     save = (FrameLayout) layout.findViewById(R.id.save);
@@ -719,11 +704,9 @@ public class uploadReport extends AppCompatActivity {
 
                                             if (as==0){
                                                 commentimage.setImageResource(R.drawable.commentnewbgtcopy);
-                                                System.out.println("customer finished a"+as+"gege");
                                             }
                                             else {
                                                 commentimage.setImageResource(R.drawable.commentnewbgt);
-                                                System.out.println("customer finished b"+as+"gege");
 
                                             }
 
@@ -894,12 +877,9 @@ public class uploadReport extends AppCompatActivity {
                     TV4.setTextSize(12);
                     TV5.setTextSize(12);
 
-                    System.out.println(loopingCursor);
 
                     reason = (EditText)layout.findViewById(R.id.reasonEdit);
                     reason.setTypeface(SourceSansProRegular);
-                    System.out.println("roziq "+Arrays.deepToString(reasontextcomment));
-                    System.out.println("roziq "+finalI);
                     reason.setText(reasontextcomment[finalI],TextView.BufferType.EDITABLE);
 
                     save = (FrameLayout) layout.findViewById(R.id.save);
@@ -1014,8 +994,6 @@ public class uploadReport extends AppCompatActivity {
             String statusString = doneCustomer[i];
             String sukses = "sukses";
 
-            System.out.println(statusString);
-            System.out.println(sukses);
 
             if (statusString==null){
                 doneCustomer[i] = "gagal";
@@ -1152,7 +1130,6 @@ public class uploadReport extends AppCompatActivity {
                     }
                 }
                 String alasanUpload = sb.toString();
-                System.out.println("reason = "+alasanUpload);
 
                 StringBuilder sb1 = new StringBuilder();
                 for (int i = 0; i < timer.length; i++) {
@@ -1162,7 +1139,6 @@ public class uploadReport extends AppCompatActivity {
                     }
                 }
                 String timerUpload = sb1.toString();
-                System.out.println("timer = "+timerUpload);
 
                 StringBuilder sb2 = new StringBuilder();
                 for (int i = 0; i < idDB.length; i++) {
@@ -1172,7 +1148,6 @@ public class uploadReport extends AppCompatActivity {
                     }
                 }
                 String idDBUpload = sb2.toString();
-                System.out.println("ID = "+idDBUpload);
 
                 StringBuilder sb3 = new StringBuilder();
                 for (int i = 0; i < doneCustomer.length; i++) {
@@ -1182,7 +1157,6 @@ public class uploadReport extends AppCompatActivity {
                     }
                 }
                 String statusIDUpload = sb3.toString();
-                System.out.println("status = "+statusIDUpload);
 
                 StringBuilder sb4 = new StringBuilder();
                 for (int i = 0; i < distances.length; i++) {
@@ -1221,11 +1195,6 @@ public class uploadReport extends AppCompatActivity {
                 String presstypeupload = sb7.toString();
 
 
-                System.out.println("reason = "+Arrays.deepToString(alasan));
-                System.out.println("timer = "+Arrays.deepToString(timer));
-                System.out.println("ID = "+Arrays.deepToString(idDB));
-                System.out.println("status = "+Arrays.deepToString(statusID));
-
 
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("token", params[0])
@@ -1254,6 +1223,8 @@ public class uploadReport extends AppCompatActivity {
 
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
+                System.out.println("gagal");
+                failedconn = 1;
                 e1.printStackTrace();
                 return "exception";
             }
@@ -1281,10 +1252,11 @@ public class uploadReport extends AppCompatActivity {
                 }
 
             } catch (IOException e) {
+                failedconn = 1;
                 e.printStackTrace();
                 return "exception";
             } finally {
-
+                failedconn = 0;
                 startTracking.disconnect();
             }
         }
@@ -1292,60 +1264,107 @@ public class uploadReport extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            System.out.println("roziq"+result);
             //uploadProcess.dismiss();
             ad4.dismiss();
             //scrollView.setVisibility(View.INVISIBLE);
             //scrollViewframe2.setVisibility(View.VISIBLE);
 
+            if (failedconn==0){
+                LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout2 = layoutInflater2.inflate(R.layout.report_uploaded, null);
+
+                imageDialog2.setView(layout2);
+                imageDialog2.setCancelable(false);
+                ad2 = imageDialog2.create();
+                ad2.show();
+
+                OK = (FrameLayout)layout2.findViewById(R.id.OK);
+
+                Typeface Semiboldtype = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Semibold.ttf");
+                final Typeface SourceSansProRegular = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Regular.ttf");
 
 
+                TV14 = (TextView)layout2.findViewById(R.id.textView14);
+                TV23 = (TextView)layout2.findViewById(R.id.textView23);
+                TV14.setTypeface(SourceSansProRegular);
+                TV23.setTypeface(SourceSansProRegular);
 
-            LayoutInflater layoutInflater2 = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-            View layout2 = layoutInflater2.inflate(R.layout.report_uploaded, null);
+                OK.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ad2.dismiss();
 
-            imageDialog2.setView(layout2);
-            imageDialog2.setCancelable(false);
-            ad2 = imageDialog2.create();
-            ad2.show();
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("UploadActivity~/uploadSuccess/~923"+apkversion)
+                                .setAction(signHashCodeEmail)
+                                .setLabel(uModel+"/"+uId)
+                                .build());
+                        TV3.setText("Report");
+                        //suksesImage.setVisibility(View.VISIBLE);
+                        scrollViewframe.setVisibility(View.INVISIBLE);
 
-            OK = (FrameLayout)layout2.findViewById(R.id.OK);
-
-            Typeface Semiboldtype = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Semibold.ttf");
-            final Typeface SourceSansProRegular = Typeface.createFromAsset(getAssets(),  "fonts/SourceSansPro-Regular.ttf");
-
-
-            TV14 = (TextView)layout2.findViewById(R.id.textView14);
-            TV23 = (TextView)layout2.findViewById(R.id.textView23);
-            TV14.setTypeface(SourceSansProRegular);
-            TV23.setTypeface(SourceSansProRegular);
-
-            OK.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ad2.dismiss();
-
-                    mTracker.send(new HitBuilders.EventBuilder().setCategory("UploadActivity~/uploadSuccess/~923"+apkversion)
-                            .setAction(signHashCodeEmail)
-                            .setLabel(uModel+"/"+uId)
-                            .build());
-                    TV3.setText("Report");
-                    //suksesImage.setVisibility(View.VISIBLE);
-                    scrollViewframe.setVisibility(View.INVISIBLE);
-
-                    read.delete("UPLOAD",null,null);
+                        read.delete("UPLOAD",null,null);
 
 
-                    dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String timestamp = dateFormat.format(new Date());
-                    try {
-                        new Logout().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp);
-                    } catch (SignatureException e) {
-                        e.printStackTrace();
+                        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String timestamp = dateFormat.format(new Date());
+                        try {
+                            new Logout().execute(PublicToken, hashMac(timestamp, "0fab227b319afe10a0566183e5c7317dd23127b3f79a964481c0e08640f21acc"), timestamp);
+                        } catch (SignatureException e) {
+                            e.printStackTrace();
+                        }
+
                     }
+                });
+            }
 
-                }
-            });
+            else {
+                //Toast.makeText(this, "tekan sekali lagi untuk keluar " , Toast.LENGTH_SHORT).show();
+                LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout = layoutInflater.inflate(R.layout.popupnotif, null);
+
+                upload.setVisibility(View.VISIBLE);
+
+                donerute.setView(layout);
+                donerute.setCancelable(false);
+                alertDialog = donerute.create();
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                alertDialog.show();
+
+                TextView tv28, tv29, TV37;
+                TV37 = (TextView)layout.findViewById(R.id.textView36);
+                TV37.setText("Missing Connection");
+                TV37.setTextSize(18);
+                TV37.setTypeface(RegularType);
+                TV37.setTextColor(getResources().getColor(R.color.red));
+                final FrameLayout frameLayout = (FrameLayout)layout.findViewById(R.id.frameLayout);
+                tv28 = (TextView)layout.findViewById(R.id.textView28);
+                tv29 = (TextView)layout.findViewById(R.id.textView29);
+
+                tv28.setTextSize(12);
+                tv29.setTextSize(12);
+
+                tv28.setText("connection failed!! please check your internet connection and try again");
+                tv29.setText("OK");
+
+                tv28.setTypeface(RegularType);
+                tv29.setTypeface(Semiboldtype);
+
+                frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch ( event.getAction() ) {
+                            case MotionEvent.ACTION_DOWN:
+                                frameLayout.setBackgroundColor(getResources().getColor(R.color.lightgrey));
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
+                                alertDialog.dismiss();
+                                break;
+                        }
+                        return true;
+                    }
+                });
+            }
 
 
 
@@ -1523,7 +1542,6 @@ public class uploadReport extends AppCompatActivity {
                 return true;
             }
         });
-
 
 
 
